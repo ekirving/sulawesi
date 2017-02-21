@@ -40,7 +40,9 @@ Anoa.coord <- Anoa.data[,c('Longitude', 'Latitude')]
 library(tess3r)
 
 # TODO fix this colour palette
-my.palette <- CreatePalette(WesAndersonCol[c(2, 3, 5, 6, 8, 7)], palette.length = 20)
+my.palette <- CreatePalette(WesAndersonCol[c(2, 3, 5, 6, 8, 7)], palette.length = 50)
+
+WesAndersonCol[c(2, 3, 5, 6, 8, 7)]
 
 xlim <- c(118.5, 127.4)
 ylim <- c(-5.9, 1.8)
@@ -57,11 +59,53 @@ par(mfrow = c(1,1), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1), bty = 'n')
 # print the map with the admix components
 plot(Anoa.struct, Anoa.coord,
      method = "map.max", 
-     interpol = FieldsKrigModel(10),
+     # background = FALSE,
+     # interpol = FieldsKrigModel(10),
+     interpol = FieldsTpsModel(), 
      main = NA, xlab = NA, ylab = NA, xaxt='n', yaxt='n', bty = 'n',
      resolution = resolution, cex = .4,
+     window = c(118.5, 127.4, -5.9, 1.8),
      xlim = xlim, ylim = ylim,
      col.palette = my.palette)
+
+# -----------------------------------------------------------------------------
+
+#  try and get it to work with a hires map
+
+# map.polygon <- rworldmap::getMap(resolution='high')
+
+map.hires <- map("worldHires", xlim = xlim, ylim = ylim, plot=FALSE, fill=TRUE)
+map.polygon <- map2SpatialPolygons(map.hires, map.hires$names)
+
+map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8))
+
+plot(x=Anoa.struct, coord=Anoa.coord,
+     method = "map.max",
+     interpol = FieldsKrigModel(10),
+     map.polygon = map.polygon,
+     main = NA, xlab = NA, ylab = NA, xaxt='n', yaxt='n', bty = 'n',
+     resolution = resolution, cex = .4,
+     window = c(118.5, 126, -5.9, 1.8),
+     xlim = xlim, ylim = ylim,
+     col.palette = my.palette)
+
+# -----------------------------------------------------------------------------
+
+# asc.raster <- tempfile()
+# download.file("http://membres-timc.imag.fr/Olivier.Francois/RasterMaps/Europe.asc", asc.raster)
+# 
+# plot(Anoa.struct, Anoa.coord,
+#      method = "map.max",
+#      interpol = FieldsKrigModel(10),
+#      raster.filename = asc.raster,
+#      main = NA, xlab = NA, ylab = NA, xaxt='n', yaxt='n', bty = 'n',
+#      resolution = resolution, cex = .4,
+#      window = c(118.5, 126, -5.9, 1.8),
+#      xlim = xlim, ylim = ylim,
+#      col.palette = my.palette)
+
+
+# -----------------------------------------------------------------------------
 
 # plot(Anoa.struct, Anoa.coord,
 #      method = "map.max", 
@@ -87,14 +131,15 @@ map.polygon <- map2SpatialPolygons(map.hires, map.hires$names)
 pl <- ggtess3Q(Anoa.struct, Anoa.coord,
          map.polygon = map.polygon, 
          col.palette = my.palette,
-         interpolation.model = FieldsTpsModel(),
+         window = c(118.5, 127.4, -5.9, 1.8),
+         interpolation.model = FieldsKrigModel(1),
          resolution = resolution)
 
 pl + geom_path(data = map.polygon, 
             aes(x = long, y = lat, group = group), size = 0.4) +
-  xlim(xlim) + ylim(ylim) +
+  xlim(118.5, 127.4) + ylim(-5.9, 1.8) +
   coord_equal() +
-  geom_point(data = Anoa.coord, aes(x = Longitude, y = Latitude), size = 0.5) +
+  geom_point(data = Anoa.coord, aes(x = Longitude, y = Latitude), size = 0.4) +
   theme_classic() +
   theme(
     # turn off the axis
@@ -163,12 +208,12 @@ require('plotrix')
 
 ## mtDNA map
 
-pdf(file = "Anoa\\Anoa_Map_mtDNA_haplogroups_NoZO.pdf", width = 11.69, height = 8.27)
+# pdf(file = "Anoa\\Anoa_Map_mtDNA_haplogroups_NoZO.pdf", width = 11.69, height = 8.27)
 
-par(mfrow = c(1,1), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1))
+# par(mfrow = c(1,1), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1))
 
 # map of Sulawesi (using lat/long coordinates)
-map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8))
+# map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8))
 
 # mask the edges of the adjacent islands using white polygons
 polygon(c(par()$usr[1], par()$usr[1], 119.25, 119.25), c(0, 2, 2, 0), 
