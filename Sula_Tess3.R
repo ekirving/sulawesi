@@ -12,13 +12,16 @@ insertSource("TESS3/R/spatialPlots.R", package = "tess3r", functions = 'PlotInte
 # load the Sulawesi RData
 load('sulawesi/Sulawesi.RData')
 
-render_map <- function(species.data, species.colours, species.clades) {
+render_map <- function(species.data, species.colours, legend.title = NA, legend.prefix = NA) {
   
   # drop any rows with missing components or locations
   species.data <- na.omit(species.data)
   
   # drop Zoo samples and those of unknown origin
   species.data <- species.data[-which(species.data$Loc_Abbrev_LF %in% c("UN", "ZO", "SU_BU", "S")),]
+  
+  # drop any columns components all zero values
+  species.data <- species.data[, !colSums(species.data[1:(ncol(species.data)-3)])==0]
   
   # get the STRUCTURE components ready for tess3
   species.struct <- as.matrix(species.data[,1:(ncol(species.data)-3)])
@@ -46,10 +49,10 @@ render_map <- function(species.data, species.colours, species.clades) {
   # plot(map.polygon, xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8), add=TRUE)
   
   # add the regions, labels and mask some of the peripheral islands
-  annotate_map(Sula_Lab, Sula_Seg, species.colours, species.clades)
+  annotate_map(Sula_Lab, Sula_Seg, species.colours, species.clades, legend.title, legend.prefix)
 }
 
-annotate_map <- function(segment.labels, segment.lines, species.colours, species.clades) {
+annotate_map <- function(segment.labels, segment.lines, species.colours, species.clades, legend.title = NA, legend.prefix = NA) {
   
   # mask the edges of the adjacent islands using white polygons
   polygon(c(par()$usr[1], par()$usr[1], 119.25, 119.25), c(0, 2, 2, 0), border = "white", col = "white")
@@ -70,8 +73,26 @@ annotate_map <- function(segment.labels, segment.lines, species.colours, species
   arrows(123.649449, -1.328482, 124.001012, -1.314753, code = 1, lwd = 2, length = 0.1)
   
   # add the legend
-  legend(125.75, 1, legend = species.clades, fill = alpha(species.colours, 0.75), cex = 1.2, bty = "n", title = "Population")
-  # legend(125.75, 1.8, legend = species.clades, fill = species.colours, cex = 0.8, bty = "n", title = "Clade")
+  if (!is.na(legend.title)) {
+    species.clades <- paste(legend.prefix, c(1:length(species.colours)), sep="")
+    legend(125.75, 1, legend = species.clades, fill = species.colours, cex = 1.2, bty = "n", title = legend.title)
+  }
+}
+
+clade2q <- function(species.data) {
+  
+  clust.column <- names(species.data)[1]
+  
+  # extract the clades
+  clades <- levels(species.data[[clust.column]])
+  
+  # convert clades into a Q matrix with 100% identity
+  for (i in 1:length(clades)) {
+    species.data[[clades[i]]] <- with(species.data, as.integer(clades[i] == species.data[clust.column]))
+  }
+  
+  # put the columns in the right order
+  species.data[,c(5:ncol(species.data), 2:4)]
 }
 
 # get the custom colour palette
@@ -98,41 +119,52 @@ map.polygon <- map2SpatialPolygons(map.hires, map.hires$names)
 
 # set the resolution of the interpolation surface
 # resolution <- c(100,100)
-# resolution <- c(300,300)
-resolution <- c(1000,1000)
+resolution <- c(300,300)
+# resolution <- c(1000,1000)
 
 locat.columns <- c('Loc_Abbrev_LF', 'Longitude', 'Latitude')
 
 # extract the STRUCTURE components and the sample locations
-# anoa.data <- subset(Anoa_All_Genetics, select = c(A4_NE_WC:A1_BT, Loc_Abbrev_LF, Longitude, Latitude))
-# baby.data <- subset(Baby_All_Genetics, select = c(B3_SU_BU:B2_SE, Loc_Abbrev_LF, Longitude, Latitude))
-# susc.data <- subset(Sus_cel_All_Genetics, select = c(S5_WC_SW:S3, Loc_Abbrev_LF, Longitude, Latitude))
+anoa.data <- subset(Anoa_All_Genetics, select = c(A4_NE_WC:A1_BT, Loc_Abbrev_LF, Longitude, Latitude))
+baby.data <- subset(Baby_All_Genetics, select = c(B3_SU_BU:B2_SE, Loc_Abbrev_LF, Longitude, Latitude))
+susc.data <- subset(Sus_cel_All_Genetics, select = c(S5_WC_SW:S3, Loc_Abbrev_LF, Longitude, Latitude))
 
-anoa.data <- Anoa_All_Genetics[,c('A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_EC', locat.columns)]
-baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', locat.columns)]
-susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S7_EC', locat.columns)]
+# anoa.data <- Anoa_All_Genetics[,c('A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_EC', locat.columns)]
+# baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', locat.columns)]
+# susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S7_EC', locat.columns)]
 
-# setup the colour lists
-anoa.colours <- WesAndersonCol[c(3, 6, 8, 2, 5)]
-baby.colours <- WesAndersonCol[c(6, 1, 2, 10, 9)]
-susc.colours <- WesAndersonCol[c(1, 2, 3, 4, 5, 6)]
+# TODO setup the colour lists
+anoa.colours <- WesAndersonCol[1:(ncol(anoa.data)-3)]
+baby.colours <- WesAndersonCol[1:(ncol(baby.data)-3)]
+susc.colours <- WesAndersonCol[1:(ncol(susc.data)-3)]
+# anoa.colours <- WesAndersonCol[c(3, 6, 8, 2, 5)]
+# baby.colours <- WesAndersonCol[c(6, 1, 2, 10, 9)]
+# susc.colours <- WesAndersonCol[c(1, 2, 3, 4, 5, 6)]
 
-# set the clade names
-anoa.clades <- c('A1','A2','A3','A4','A5')
-baby.clades <- c('B1','B2','B3','B4','B5','B6')
-susc.clades <- c('S1','S2','S3','S4','S5')
+# get the cluster data
+anoa.data2 <- clade2q(Anoa_All_Genetics[,c('LF_Anoa_Clust', locat.columns)])
+baby.data2 <- clade2q(Baby_All_Genetics[,c('LF_Baby_Clust', locat.columns)])
+susc.data2 <- clade2q(Sus_cel_All_Genetics[,c('LF_Sus_cel_Clust', locat.columns)])
+
+# TODO setup the colour lists
+anoa.colours2 <- WesAndersonCol[1:(ncol(anoa.data2)-3)]
+baby.colours2 <- WesAndersonCol[1:(ncol(baby.data2)-3)]
+susc.colours2 <- WesAndersonCol[1:(ncol(susc.data2)-3)]
 
 pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
 
 # display the maps in a 2x3 grid
 par(mfrow = c(2,3), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1), bty = 'n')
 
-# STRUCTURE maps
-render_map(anoa.data, anoa.colours, anoa.clades)
-render_map(baby.data, baby.colours, baby.clades)
-render_map(susc.data, susc.colours, susc.clades)
+# Clade maps
+render_map(anoa.data2, anoa.colours2, 'Clades', 'A')
+render_map(baby.data2, baby.colours2, 'Clades', 'B')
+render_map(susc.data2, susc.colours2, 'Clades', 'S')
 
-# TODO add the clade maps
+# STRUCTURE maps
+render_map(anoa.data, anoa.colours, 'Populations', 'A')
+render_map(baby.data, baby.colours, 'Populations', 'B')
+render_map(susc.data, susc.colours, 'Populations', 'S')
 
 dev.off()
 
