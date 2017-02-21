@@ -1,0 +1,83 @@
+## need to set your own working directory
+
+require('wesanderson')
+
+WesAndersonCol <- c(wes_palette("GrandBudapest")[c(1:2, 4)], 
+ 			wes_palette("GrandBudapest2")[c(1:2, 4)], 
+ 			wes_palette("Royal1")[c(1, 2)],
+ 			wes_palette("Moonrise3")[c(1, 3, 2, 5)],
+ 			wes_palette("Moonrise2")[c(4, 2)],
+ 			wes_palette("Darjeeling")[c(1)],
+ 			wes_palette("Royal2")[c(5)],
+ 			wes_palette("Chevalier")[c(3))
+
+
+require('dplyr')
+
+# make the matrices that we need for the maps
+
+Anoa_HapRegion <- 
+ as.data.frame.matrix(with(Anoa_All_Genetics, table(Loc_Abbrev_LF, LF_Anoa_Clust)))
+Anoa_HapRegion <- Anoa_HapRegion %>%
+	dplyr::mutate(Sum = rowSums(Anoa_HapRegion)) %>%
+	dplyr::mutate(Loc_Abbrev_LF = dimnames(Anoa_HapRegion)[[1]])
+Anoa_HaploLF_Region <- dplyr::left_join(Anoa_HapRegion, Sula_Reg, by = "Loc_Abbrev_LF")
+Anoa_HaploLF_Region <- Anoa_HaploLF_Region %>%
+	dplyr::mutate(Prop_A4a_WC = round(A4a_WC / Sum, 3)) %>%
+	dplyr::mutate(Prop_A1_NE = round(A1_NE / Sum, 3)) %>%
+	dplyr::mutate(Prop_A5b_SE = round(A5b_SE / Sum, 3)) %>%
+	dplyr::mutate(Prop_A2_NW = round(A2_NW / Sum, 3)) %>%
+	dplyr::mutate(Prop_A3_EC = round(A3_EC / Sum, 3)) %>%
+	dplyr::mutate(Prop_A5a_BT = round(A5a_BT / Sum, 3)) %>%
+	dplyr::mutate(Prop_A4b = round(A4b / Sum, 3)) %>%
+	dplyr::filter(!is.na(Prop_A4a_WC))
+
+Anoa_HaploLF_Region_NoZO <- Anoa_HaploLF_Region %>%
+	dplyr::filter(Loc_Abbrev_LF != "ZO") %>%
+	dplyr::select(A4a_WC:A5a_BT, Sum:Prop_A5a_BT)
+
+
+require('mapdata')
+require('maps')
+require('scales')
+require('plotrix')
+
+## mtDNA map
+
+pdf(file = "Anoa\\Anoa_Map_mtDNA_haplogroups_NoZO.pdf", width = 11.69, height = 8.27)
+
+par(mfrow = c(1,1), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1))
+
+map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8))
+polygon(c(par()$usr[1], par()$usr[1], 119.25, 119.25), c(0, 2, 2, 0), 
+	border = "white", col = "white")
+polygon(c(120, 120, 121, 121), 
+	c(par()$usr[3], -5.7, -5.7, par()$usr[3]), 
+	border = "white", col = "white")
+polygon(c(127, 127, par()$usr[2], par()$usr[2]), c(-1.8, 2, 2, -1.8), 
+	border = "white", col = "white")
+with(Sula_Seg, segments(Long_1, Lat_1, Long_2, Lat_2, lwd = 3))
+with(Sula_Lab_NoUNZO, text(Long, Lat, labels = dimnames(Sula_Lab_NoUNZO)[[1]], cex = 0.9))
+arrows(122.674413, -0.411239, 122.35, -0.394760, length = 0.1, code = 2, lwd = 2)
+arrows(123.649449, -1.328482, 124.001012, -1.314753, code = 1, lwd = 2, length = 0.1)
+polygon(c(125, 125, 125.8, 125.8), c(-3.5, -3.1, -3.1, -3.5), 
+	border = "white", col = "white")
+
+for(i in 1:nrow(Anoa_HaploLF_Region_NoZO))
+	{
+	xxx <-with(Anoa_HaploLF_Region_NoZO, 
+		c(Prop_A4a_WC[i], Prop_A1_NE[i], Prop_A5b_SE[i], Prop_A2_NW[i], Prop_A3_EC[i],
+ 		Prop_A5a_BT[i]))[which(Anoa_HaploLF_Region_NoZO[i, 1:6] > 0)]
+	with(Anoa_HaploLF_Region_NoZO, floating.pie(Long_Reg_LF[i], Lat_Reg_LF[i], x = xxx, col = 
+		alpha(WesAndersonCol[c(2, 3, 5, 6, 8, 7)][which(Anoa_HaploLF_Region_NoZO[i, 
+		1:6] > 0)], 0.75), radius = 0.4, border = NA))
+	}
+with(Anoa_HaploLF_Region_NoZO, text(Long_Reg_LF, Lat_Reg_LF, Sum))
+
+legend(125.75, 1, legend = c("A1", "A2", "A3", "A4", "A5a", "A5b"),
+	fill = alpha(WesAndersonCol[c(3, 6, 8, 2, 7, 5)], 0.75), cex = 1.2, bty = "n", title = "Clade")
+
+dev.off()
+
+
+
