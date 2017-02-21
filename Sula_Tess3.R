@@ -3,14 +3,14 @@ library(mapdata)
 library(tess3r)
 library(wesanderson)
 
-# load local bugfixed TESS3 code
-insertSource("/Users/Evan/Dropbox/Code/TESS3/R/spatialPlots.R", package = "tess3r", functions = 'PlotInterpotationMax')
-
 # set working directory
-setwd('/Users/Evan/Dropbox/Documents/Oxford/DPhil/Sulawesi/')
+setwd('/Users/Evan/Dropbox/Code/')
+
+# load local bugfixed TESS3 code
+insertSource("TESS3/R/spatialPlots.R", package = "tess3r", functions = 'PlotInterpotationMax')
 
 # load the Sulawesi RData
-load('Sulawesi.RData')
+load('sulawesi/Sulawesi.RData')
 
 render_map <- function(species.data, species.colours, species.clades) {
   
@@ -122,7 +122,7 @@ anoa.clades <- c('A1','A2','A3','A4','A5')
 baby.clades <- c('B1','B2','B3','B4','B5','B6')
 susc.clades <- c('S1','S2','S3','S4','S5')
 
-pdf(file = "temp.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
+pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
 
 # display the maps in a 2x3 grid
 par(mfrow = c(2,3), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1), bty = 'n')
