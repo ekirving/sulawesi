@@ -45,7 +45,8 @@ my.palette <- CreatePalette(WesAndersonCol[c(2, 3, 5, 6, 8, 7)], palette.length 
 WesAndersonCol[c(2, 3, 5, 6, 8, 7)]
 
 xlim <- c(118.5, 127.4)
-ylim <- c(-5.9, 1.8)
+ylim <- c(-5.9, 2)
+# resolution <- c(1000,1000)
 resolution <- c(400,400)
 
 # -----------------------------------------------------------------------------
@@ -74,20 +75,31 @@ plot(Anoa.struct, Anoa.coord,
 
 # map.polygon <- rworldmap::getMap(resolution='high')
 
-map.hires <- map("worldHires", xlim = xlim, ylim = ylim, plot=FALSE, fill=TRUE)
-map.polygon <- map2SpatialPolygons(map.hires, map.hires$names)
+insertSource("/Users/Evan/Dropbox/Code/TESS3/R/plotQ.R", package = "tess3r", functions = 'plot.tess3Q')
+insertSource("/Users/Evan/Dropbox/Code/TESS3/R/spatialPlots.R", package = "tess3r", functions = 'PlotInterpotationMax')
 
-map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8))
+# map.hires <- map("worldHires", xlim = xlim, ylim = ylim, plot=FALSE, fill=TRUE)
+# map.polygon <- map2SpatialPolygons(map.hires, map.hires$names)
 
 plot(x=Anoa.struct, coord=Anoa.coord,
      method = "map.max",
-     interpol = FieldsKrigModel(10),
-     map.polygon = map.polygon,
+     interpol = FieldsTpsModel(),
+     map.polygon = rworldmap::getMap(resolution = "high"),
      main = NA, xlab = NA, ylab = NA, xaxt='n', yaxt='n', bty = 'n',
      resolution = resolution, cex = .4,
-     window = c(118.5, 126, -5.9, 1.8),
-     xlim = xlim, ylim = ylim,
+     window = c(118.5, 127.4, -6.1, 1.8),
+     xlim =  c(118.5, 127.4), ylim = c(-6.1, 1.8),
      col.palette = my.palette)
+
+# render the actual map
+map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8), add=TRUE)
+
+segment.labels <- Sula_Lab
+segment.lines <- Sula_Seg
+
+# add the regions, labels and mask some of the peripheral islands
+annotate_map(segment.labels, segment.lines)
+
 
 # -----------------------------------------------------------------------------
 
@@ -119,37 +131,39 @@ plot(x=Anoa.struct, coord=Anoa.coord,
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-library(ggplot2)
-library(maps)
-library(mapdata)
-library(maptools)
+## ggplot2 version...
 
-# get the worldHires map and convert to SpatialPolygons
-map.hires <- map("worldHires", xlim = xlim, ylim = ylim, plot=FALSE, fill=TRUE)
-map.polygon <- map2SpatialPolygons(map.hires, map.hires$names)
-
-pl <- ggtess3Q(Anoa.struct, Anoa.coord,
-         map.polygon = map.polygon, 
-         col.palette = my.palette,
-         window = c(118.5, 127.4, -5.9, 1.8),
-         interpolation.model = FieldsKrigModel(1),
-         resolution = resolution)
-
-pl + geom_path(data = map.polygon, 
-            aes(x = long, y = lat, group = group), size = 0.4) +
-  xlim(118.5, 127.4) + ylim(-5.9, 1.8) +
-  coord_equal() +
-  geom_point(data = Anoa.coord, aes(x = Longitude, y = Latitude), size = 0.4) +
-  theme_classic() +
-  theme(
-    # turn off the axis
-    axis.line=element_blank(),
-    axis.text.x=element_blank(),
-    axis.text.y=element_blank(),
-    axis.ticks=element_blank(),
-    axis.title.x=element_blank(),
-    axis.title.y=element_blank()
-  )
+# library(ggplot2)
+# library(maps)
+# library(mapdata)
+# library(maptools)
+# 
+# # get the worldHires map and convert to SpatialPolygons
+# map.hires <- map("worldHires", xlim = xlim, ylim = ylim, plot=FALSE, fill=TRUE)
+# map.polygon <- map2SpatialPolygons(map.hires, map.hires$names)
+# 
+# pl <- ggtess3Q(Anoa.struct, Anoa.coord,
+#          map.polygon = map.polygon, 
+#          col.palette = my.palette,
+#          window = c(118.5, 127.4, -5.9, 1.8),
+#          interpolation.model = FieldsKrigModel(1),
+#          resolution = resolution)
+# 
+# pl + geom_path(data = map.polygon, 
+#             aes(x = long, y = lat, group = group), size = 0.4) +
+#   xlim(118.5, 127.4) + ylim(-5.9, 1.8) +
+#   coord_equal() +
+#   geom_point(data = Anoa.coord, aes(x = Longitude, y = Latitude), size = 0.4) +
+#   theme_classic() +
+#   theme(
+#     # turn off the axis
+#     axis.line=element_blank(),
+#     axis.text.x=element_blank(),
+#     axis.text.y=element_blank(),
+#     axis.ticks=element_blank(),
+#     axis.title.x=element_blank(),
+#     axis.title.y=element_blank()
+#   )
 
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
@@ -193,14 +207,6 @@ Anoa_HaploLF_Region_NoZO <- Anoa_HaploLF_Region %>%
 	dplyr::filter(Loc_Abbrev_LF != "ZO") %>%
 	dplyr::select(A4a_WC:A5a_BT, Sum:Prop_A5a_BT)
 
-# remove the UN and ZO rows from the matrix of label coordinates
-Sula_Lab_NoUNZO <- Sula_Lab[-which(rownames(Sula_Lab) %in% c("UN", "ZO")),]
-
-#Sula_Lab_NoUNZO <- Sula_Lab %>%
-#  dplyr::filter(!(rownames(Sula_Lab) %in% c("UN", "ZO")))
-  
-
-
 require('mapdata')
 require('maps')
 require('scales')
@@ -215,28 +221,26 @@ require('plotrix')
 # map of Sulawesi (using lat/long coordinates)
 # map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8))
 
-# mask the edges of the adjacent islands using white polygons
-polygon(c(par()$usr[1], par()$usr[1], 119.25, 119.25), c(0, 2, 2, 0), 
-	border = "white", col = "white")
-polygon(c(120, 120, 121, 121), 
-	c(par()$usr[3], -5.7, -5.7, par()$usr[3]), 
-	border = "white", col = "white")
-polygon(c(127, 127, par()$usr[2], par()$usr[2]), c(-1.8, 2, 2, -1.8), 
-	border = "white", col = "white")
+annotate_map <- function(segment.labels, segment.lines) {
+  
+  # mask the edges of the adjacent islands using white polygons
+  polygon(c(par()$usr[1], par()$usr[1], 119.25, 119.25), c(0, 2, 2, 0), border = "white", col = "white")
+  polygon(c(120, 120, 121, 121), c(par()$usr[3], -5.7, -5.7, par()$usr[3]), border = "white", col = "white")
+  polygon(c(127, 127, par()$usr[2], par()$usr[2]), c(-1.8, 2, 2, -1.8), border = "white", col = "white")
+  
+  # segment the island into regions (using the coordinates in segment.lines)
+  with(segment.lines, segments(Long_1, Lat_1, Long_2, Lat_2, lwd = 3))
+  
+  # remove the UN and ZO rows from the matrix of label coordinates
+  segment.labels <- segment.labels[-which(rownames(segment.labels) %in% c("UN", "ZO", "SU_BU", "S")),]
 
-# segment the island into regions (using the coordinates in Sula_Seg)
-with(Sula_Seg, segments(Long_1, Lat_1, Long_2, Lat_2, lwd = 3))
-
-# label the regions
-with(Sula_Lab_NoUNZO, text(Long, Lat, labels = dimnames(Sula_Lab_NoUNZO)[[1]], cex = 0.9))
-
-# add arrows for ambiguous label positions
-arrows(122.674413, -0.411239, 122.35, -0.394760, length = 0.1, code = 2, lwd = 2)
-arrows(123.649449, -1.328482, 124.001012, -1.314753, code = 1, lwd = 2, length = 0.1)
-
-# partially mask one of the labels (why not exclude before rendering?)
-polygon(c(125, 125, 125.8, 125.8), c(-3.5, -3.1, -3.1, -3.5), 
-	border = "white", col = "white")
+  # label the regions
+  with(segment.labels, text(Long, Lat, labels = dimnames(segment.labels)[[1]], cex = 0.8))
+  
+  # add arrows for ambiguous label positions
+  arrows(122.674413, -0.411239, 122.35, -0.394760, length = 0.1, code = 2, lwd = 2)
+  arrows(123.649449, -1.328482, 124.001012, -1.314753, code = 1, lwd = 2, length = 0.1)
+}
 
 for(i in 1:nrow(Anoa_HaploLF_Region_NoZO)) {
   # get all the non-zero % components
