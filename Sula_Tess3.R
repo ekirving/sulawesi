@@ -1,9 +1,11 @@
 ## need to set your own working directory
+setwd('/Users/Evan/Dropbox/Documents/Oxford/DPhil/Sulawesi/')
 
-load('/Users/Evan/Dropbox/Documents/Oxford/DPhil/Sulawesi/Sulawesi.RData')
+# load the Sulawesi RData
+load('Sulawesi.RData')
 
+# get the custom colour palette
 require('wesanderson')
-
 WesAndersonCol <- c(wes_palette("GrandBudapest")[c(1:2, 4)],
  			wes_palette("GrandBudapest2")[c(1:2, 4)],
  			wes_palette("Royal1")[c(1, 2)],
@@ -13,7 +15,100 @@ WesAndersonCol <- c(wes_palette("GrandBudapest")[c(1:2, 4)],
  			wes_palette("Royal2")[c(5)],
  			wes_palette("Chevalier")[c(3)])
 
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
+# TODO which STRUCTURE fields to use? Az4_NE_WC:Az3_BT/ A4_NE_WC:A1_BT
+
+# extract the STRUCTURE components and the sample locations
+Anoa.data <- subset(Anoa_All_Genetics, select = c(Az4_NE_WC:Az3_BT, Loc_Abbrev_LF, Longitude, Latitude))
+
+# drop any rows with missing components or locations
+Anoa.data <- na.omit(Anoa.data)
+
+# drop Zoo samples
+Anoa.data <- Anoa.data[Anoa.data$Loc_Abbrev_LF != "ZO",]
+
+# get the STRUCTURE components ready for tess3
+Anoa.struct <- as.matrix(Anoa.data[,1:5])
+class(Anoa.struct) <- c("tess3Q", "matrix")
+
+# get the coordinates of the remaining samples
+Anoa.coord <- Anoa.data[,c('Longitude', 'Latitude')]
+
+library(tess3r)
+
+# TODO fix this colour palette
+my.palette <- CreatePalette(WesAndersonCol[c(2, 3, 5, 6, 8, 7)], palette.length = 20)
+
+xlim <- c(118.5, 127.4)
+ylim <- c(-5.9, 1.8)
+resolution <- c(400,400)
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
+library(maps)
+
+par(mfrow = c(1,1), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1), bty = 'n')
+
+# print the map with the admix components
+plot(Anoa.struct, Anoa.coord,
+     method = "map.max", 
+     interpol = FieldsKrigModel(10),
+     main = NA, xlab = NA, ylab = NA, xaxt='n', yaxt='n', bty = 'n',
+     resolution = resolution, cex = .4,
+     xlim = xlim, ylim = ylim,
+     col.palette = my.palette)
+
+# plot(Anoa.struct, Anoa.coord,
+#      method = "map.max", 
+#      interpol = FieldsTpsModel(),
+#      main = NA, xlab = NA, ylab = NA, xaxt='n', yaxt='n', bty = 'n',
+#      resolution = resolution, cex = .4,
+#      xlim = xlim, ylim = ylim,
+#      col.palette = my.palette)
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
+library(ggplot2)
+library(maps)
+library(mapdata)
+library(maptools)
+
+# get the worldHires map and convert to SpatialPolygons
+map.hires <- map("worldHires", xlim = xlim, ylim = ylim, plot=FALSE, fill=TRUE)
+map.polygon <- map2SpatialPolygons(map.hires, map.hires$names)
+
+pl <- ggtess3Q(Anoa.struct, Anoa.coord,
+         map.polygon = map.polygon, 
+         col.palette = my.palette,
+         interpolation.model = FieldsTpsModel(),
+         resolution = resolution)
+
+pl + geom_path(data = map.polygon, 
+            aes(x = long, y = lat, group = group), size = 0.4) +
+  xlim(xlim) + ylim(ylim) +
+  coord_equal() +
+  geom_point(data = Anoa.coord, aes(x = Longitude, y = Latitude), size = 0.5) +
+  theme_classic() +
+  theme(
+    # turn off the axis
+    axis.line=element_blank(),
+    axis.text.x=element_blank(),
+    axis.text.y=element_blank(),
+    axis.ticks=element_blank(),
+    axis.title.x=element_blank(),
+    axis.title.y=element_blank()
+  )
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 require('dplyr')
 
 # make the matrices that we need for the maps
@@ -21,104 +116,13 @@ require('dplyr')
 # extract the data frame
 Anoa_HapRegion <- as.data.frame.matrix(with(Anoa_All_Genetics, table(Loc_Abbrev_LF, LF_Anoa_Clust)))
 
-names(Anoa_All_Genetics)
+# add a row sum column AND add a Loc_Abbrev_LF column (so we can join the lat/long data)
+Anoa_HapRegion <- Anoa_HapRegion %>%
+  dplyr::mutate(Sum = rowSums(Anoa_HapRegion)) %>%
+  dplyr::mutate(Loc_Abbrev_LF = dimnames(Anoa_HapRegion)[[1]])
 
-# extract the STRUCTURE components and the sample locations...
-# Az4_NE_WC:Az3_BT - ("Az4_NE_WC", "Az5_SE", "Az1_NW", "Az2_NC_EC", "Az3_BT")
-#  A4_NE_WC:A1_BT  - ("A4_NE_WC",  "A3_SE",  "A2_NW",  "A5_NC_EC",  "A1_BT")
-
-# comp1 <- c("Az4_NE_WC", "Az5_SE", "Az1_NW", "Az2_NC_EC", "Az3_BT")
-# comp2 <- c("A4_NE_WC",  "A3_SE",  "A2_NW",  "A5_NC_EC",  "A1_BT")
-
-Anoa.struct1 <- subset(Anoa_All_Genetics, select = c(AAMID, Az4_NE_WC:Az3_BT, Loc_Abbrev_LF, Latitude, Longitude))
-Anoa.struct2 <- subset(Anoa_All_Genetics, select = c(AAMID, A4_NE_WC:A1_BT, Loc_Abbrev_LF, Latitude, Longitude))
-
-# drop any rows with missing components or locations
-Anoa.struct1 <- na.omit(Anoa.struct1)
-Anoa.struct2 <- na.omit(Anoa.struct2)
-
-# drop Zoo samples
-Anoa.struct1 <- Anoa.struct1[Anoa.struct1$Loc_Abbrev_LF != "ZO",]
-Anoa.struct2 <- Anoa.struct2[Anoa.struct2$Loc_Abbrev_LF != "ZO",]
-
-# get just the STRUCTURE components
-struct1 <- as.matrix(Anoa.struct1[,2:6])
-class(struct1) <- c("tess3Q", "matrix")
-struct2 <- as.matrix(Anoa.struct2[,2:6])
-class(struct2) <- c("tess3Q", "matrix")
-
-# get the coordinates of the samples
-coord1 <- Anoa.struct1[,c('Longitude', 'Latitude')]
-coord2 <- Anoa.struct2[,c('Longitude', 'Latitude')]
-
-library(tess3r)
-
-# TODO fix this colour palette
-# my.colours <- c('#e41a1c', '#377eb8', '#984ea3', '#a65628', '#4daf4a', '#ffff33', '#ff7f00')
-my.palette <- CreatePalette(WesAndersonCol[c(2, 3, 5, 6, 8, 7)], palette.length = 20)
-
-
-par(mfrow = c(1,1), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1), bty = 'n')
-map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8))
-
-library(rworldmap)
-library(rworldxtra)
-
-map.polygon <- getMap(resolution = "high")
-
-asc.raster <- tempfile()
-download.file("http://membres-timc.imag.fr/Olivier.Francois/RasterMaps/Europe.asc", asc.raster)
-# res = c(400,400)
-res = c(200,200)
-
-tmp <- map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8), plot=FALSE, fill = TRUE)
-vect2rast(tmp)
-
-require(maptools)
-
-map.polygon <- map2SpatialPolygons(tmp,tmp$names)
-default.map <- rworldmap::getMap()
-
-
-# print the map with the admix components
-plot(struct1, coord1[,c('Longitude', 'Latitude')], 
-     method = "map.max", 
-     interpol = FieldsKrigModel(10),  
-     # main = "Ancestry coefficients",
-     # xlab = "Longitude", ylab = "Latitude",
-     # add=TRUE,
-     # map.polygon = map.polygon,
-     # map.polygon = default.map,
-     main = NA, xlab = NA, ylab = NA, xaxt='n', yaxt='n',
-     resolution = res, cex = .4,
-     xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8),
-     col.palette = my.palette)
-
-library(ggplot2)
-map.polygon <- rworldmap::getMap()
-map.polygon <- getMap(resolution = "high")
-map.polygon <- map2SpatialPolygons(tmp,tmp$names)
-
-pl <- ggtess3Q(struct1, coord1[,c('Longitude', 'Latitude')], 
-               # interpol = FieldsKrigModel(10),  
-               resolution = c(400,400),
-               col.palette = my.palette)
-pl +
-  geom_path(data = map.polygon, aes(x = long, y = lat, group = group)) +
-  xlim(118.5, 127.4) +
-  ylim(-5.9, 1.8) +
-  # coord_equal() +
-  geom_point(data = as.data.frame(coord1), aes(x = Longitude, y = Latitude), size = 1) +
-  xlab("Longitute") +
-  ylab("Latitude")
-
-
-map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8),add=TRUE)
-map("worldHires", xlim = c(118.5, 127.4), ylim = c(-5.9, 1.8))
-
-list.files(system.file("", package="rgdal"))
-update.packages(checkBuilt=TRUE, ask=FALSE)
-system.file("", package="rgdal")
+# join the lat/long data using Loc_Abbrev_LF as the key
+Anoa_HaploLF_Region <- dplyr::left_join(Anoa_HapRegion, Sula_Reg, by = "Loc_Abbrev_LF")
 
 # add a row sum column AND add a Loc_Abbrev_LF column (so we can join the lat/long data)
 Anoa_HapRegion <- Anoa_HapRegion %>%
@@ -196,7 +200,7 @@ for(i in 1:nrow(Anoa_HaploLF_Region_NoZO)) {
 	
 	# add a pie chart of the % components (preserving colour order for each component) using a 0.75 transparency
 	with(Anoa_HaploLF_Region_NoZO, floating.pie(Long_Reg_LF[i], Lat_Reg_LF[i], x = xxx, col = 
-		alpha(WesAndersonCol[c(2, 3, 5, 6, 8, 7)][which(Anoa_HaploLF_Region_NoZO[i, 1:6] > 0)], 0.75), radius = 0.4, border = NA))
+		alpha(WesAndersonCol[c(2, 3, 5, 6, 8, 7)][which(Anoa_HaploLF_Region_NoZO[i, 1:6] > 0)], 0.99), radius = 0.4, border = NA))
 }
 
 # add the count of samples ontop of each pie chart
