@@ -117,7 +117,7 @@ annotate_map <- function(segment.labels, segment.lines, species.colours, species
   # add the legend
   if (!is.na(legend.title)) {
     # trim any trailing suffix
-    # species.clades
+    species.clades <- sub("_.+", "", species.clades)
     legend(125.75, 1, legend = species.clades, fill = species.colours, cex = 1.2, bty = "n", title = legend.title)
   }
 }
