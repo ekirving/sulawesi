@@ -34,7 +34,7 @@ interpol = FieldsKrigModel()
 # interpol = FieldsTpsModel()
 
 # Tess3 resolution for the interpolation surface
-resolution <- c(200,200)
+resolution <- c(400,400)
 # resolution <- c(1000,1000)
 
 # display the outline of the map, overlaid on the admixture components
@@ -123,10 +123,14 @@ annotate_map <- function(segment.labels, segment.lines, species.colours, species
   arrows(122.674413, -0.411239, 122.35, -0.394760, length = 0.1, code = 2, lwd = 2)
   arrows(123.649449, -1.328482, 124.001012, -1.314753, code = 1, lwd = 2, length = 0.1)
 
-  # add the legend
   if (!is.na(legend.title)) {
     # trim any trailing suffix
     species.clades <- sub("_.+", "", species.clades)
+
+    # handle special case of A4a
+    species.clades <- sub("A4a", "A4", species.clades)
+
+    # add the legend
     legend(125.75, 1, legend = species.clades, fill = species.colours, cex = 1.2, bty = "n", title = legend.title)
   }
 }
