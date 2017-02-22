@@ -80,7 +80,7 @@ render_map <- function(species.data, species.colours, map.display = TRUE, legend
        resolution = resolution,
        interpol = interpol,
        xlab = NA, ylab = NA, xaxt='n', yaxt='n',
-       main = NA, bty = 'n', cex = .4,
+       main = NA, bty = 'n', cex = .6,
        window = c(xlim, ylim),
        xlim =  xlim, ylim = ylim,
        col.palette = my.palette)
@@ -90,8 +90,14 @@ render_map <- function(species.data, species.colours, map.display = TRUE, legend
     plot(map.polygon, xlim = xlim, ylim = ylim, add=TRUE)
   }
 
+  # add the count of samples for each zone
+  segment.labels <- cbind(name=rownames(Sula_Lab),Sula_Lab)
+  counts <- as.data.frame(table(species.data$Loc_Abbrev_LF))
+  segment.labels <- merge(x=segment.labels, y=counts, by.x="name", by.y="Var1", fill=0, all.x = TRUE)
+  segment.labels[is.na(segment.labels)] <- 0
+
   # add the regions, labels and mask some of the peripheral islands
-  annotate_map(Sula_Lab, Sula_Seg, species.colours, species.clades, legend.title)
+  annotate_map(segment.labels, Sula_Seg, species.colours, species.clades, legend.title)
 }
 
 annotate_map <- function(segment.labels, segment.lines, species.colours, species.clades, legend.title = NA) {
@@ -105,10 +111,13 @@ annotate_map <- function(segment.labels, segment.lines, species.colours, species
   with(segment.lines, segments(Long_1, Lat_1, Long_2, Lat_2, lwd = 3))
 
   # remove the UN and ZO rows from the matrix of label coordinates
-  segment.labels <- segment.labels[-which(rownames(segment.labels) %in% c("UN", "ZO", "SU_BU", "S")),]
+  segment.labels <- segment.labels[-which(segment.labels$name %in% c("UN", "ZO", "SU_BU", "S")),]
+
+  # add the count of n for each label
+  segment.labels$label <- paste(segment.labels$name, " (n=", segment.labels$Freq, ")", sep="")
 
   # label the regions
-  with(segment.labels, text(Long, Lat, labels = dimnames(segment.labels)[[1]], cex = 1.2))
+  with(segment.labels, text(Long, Lat, labels = segment.labels$label, cex = 1.2, pos = 4))
 
   # add arrows for ambiguous label positions
   arrows(122.674413, -0.411239, 122.35, -0.394760, length = 0.1, code = 2, lwd = 2)
@@ -138,6 +147,17 @@ clade2q <- function(species.data) {
   species.data[,c(5:ncol(species.data), 2:4)]
 }
 
+# adjust the label positions
+Sula_Lab$Long <- Sula_Lab$Long-0.3
+Sula_Lab['WC','Long'] <- Sula_Lab['WC','Long'] - 0.3
+Sula_Lab['WC','Lat'] <- Sula_Lab['WC','Lat'] + 0.75
+Sula_Lab['NE','Lat'] <- Sula_Lab['NE','Lat'] + 0.35
+Sula_Lab['NC','Lat'] <- Sula_Lab['NC','Lat'] + 0.10
+Sula_Lab['EC','Lat'] <- Sula_Lab['EC','Lat'] - 0.2
+Sula_Lab['SE','Lat'] <- Sula_Lab['SE','Lat'] + 0.2
+Sula_Lab['SE','Long'] <- Sula_Lab['SE','Long'] + 0.3
+Sula_Lab['BT','Long'] <- Sula_Lab['BT','Long'] + 0.2
+
 # start preparing the data
 location.columns <- c('Loc_Abbrev_LF', 'Longitude', 'Latitude')
 
@@ -145,10 +165,6 @@ location.columns <- c('Loc_Abbrev_LF', 'Longitude', 'Latitude')
 anoa.data <- Anoa_All_Genetics[,c('A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_EC', location.columns)]
 baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', location.columns)]
 susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S6_BU', 'S7_EC', location.columns)]
-
-# anoa.data <- subset(Anoa_All_Genetics, select = c(A4_NE_WC:A1_BT, Loc_Abbrev_LF, Longitude, Latitude))
-# baby.data <- subset(Baby_All_Genetics, select = c(B3_SU_BU:B2_SE, Loc_Abbrev_LF, Longitude, Latitude))
-# susc.data <- subset(Sus_cel_All_Genetics, select = c(S5_WC_SW:S3, Loc_Abbrev_LF, Longitude, Latitude))
 
 # TODO setup the colour lists
 anoa.colours <- WesAndersonCol[1:(ncol(anoa.data)-3)]
@@ -180,4 +196,4 @@ render_map(anoa.data, anoa.colours, map.display, 'Populations')
 render_map(baby.data, baby.colours, map.display, 'Populations')
 render_map(susc.data, susc.colours, map.display, 'Populations')
 
-# dev.off()
+dev.off()
