@@ -160,11 +160,6 @@ anoa.data2 <- clade2q(Anoa_All_Genetics[,c('LF_Anoa_Clust', location.columns)])
 baby.data2 <- clade2q(Baby_All_Genetics[,c('LF_Baby_Clust', location.columns)])
 susc.data2 <- clade2q(Sus_cel_All_Genetics[,c('LF_Sus_cel_Clust', location.columns)])
 
-levels(Anoa_All_Genetics$LF_Anoa_Clust)
-
-names(Anoa_All_Genetics)
-head(Anoa_All_Genetics[,c('AAMID','LF_Anoa_Clust', 'PG_Anoa_Clust', 'GL_CladeNew', 'GL_CladeRich')])
-
 # TODO setup the colour lists
 anoa.colours2 <- WesAndersonCol[1:(ncol(anoa.data2)-3)]
 baby.colours2 <- WesAndersonCol[1:(ncol(baby.data2)-3)]
