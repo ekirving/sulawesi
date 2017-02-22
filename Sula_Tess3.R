@@ -192,8 +192,8 @@ render_map(baby.data2, baby.colours2, map.display, 'Clades')
 render_map(susc.data2, susc.colours2, map.display, 'Clades')
 
 # STRUCTURE maps
-render_map(anoa.data, anoa.colours, map.display, 'Populations')
-render_map(baby.data, baby.colours, map.display, 'Populations')
-render_map(susc.data, susc.colours, map.display, 'Populations')
+render_map(anoa.data, anoa.colours, map.display)
+render_map(baby.data, baby.colours, map.display)
+render_map(susc.data, susc.colours, map.display)
 
 dev.off()
