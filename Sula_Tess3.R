@@ -58,7 +58,7 @@ render_map <- function(species.data, species.colours, map.display = TRUE, legend
   species.data <- species.data[-which(species.data$Loc_Abbrev_LF %in% c("UN", "ZO", "SU_BU", "S")),]
 
   # drop any columns with all zero values (i.e. any orphan components for Zoo samples)
-  species.data <- species.data[, !colSums(species.data[1:(ncol(species.data)-3)])==0]
+  species.data <- species.data[, c(!colSums(species.data[1:(ncol(species.data)-3)])==0, TRUE, TRUE, TRUE)]
 
   # extract the clade/population names
   species.clades <- names(species.data)[1:(ncol(species.data)-3)]
@@ -70,8 +70,8 @@ render_map <- function(species.data, species.colours, map.display = TRUE, legend
   # get the coordinates of the remaining samples
   species.coord <- species.data[,c('Longitude', 'Latitude')]
 
-  # make the colour palette
-  my.palette <- CreatePalette(species.colours, palette.length = palette.length)
+  # make the colour palette (and reverse the order because tess3 reads this backwards)
+  my.palette <- rev(CreatePalette(species.colours[1:length(species.clades)], palette.length = palette.length))
 
   # plot the interpolation surface
   plot(x=species.struct, coord=species.coord,
@@ -165,7 +165,7 @@ anoa.colours2 <- WesAndersonCol[1:(ncol(anoa.data2)-3)]
 baby.colours2 <- WesAndersonCol[1:(ncol(baby.data2)-3)]
 susc.colours2 <- WesAndersonCol[1:(ncol(susc.data2)-3)]
 
-# pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
+pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
 
 # display the maps in a 2x3 grid
 par(mfrow = c(2,3), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1), bty = 'n')
