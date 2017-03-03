@@ -155,33 +155,23 @@ clade2q <- function(species.data) {
   species.data[,c(5:ncol(species.data), 2:4)]
 }
 
-# adjust the label positions
+# adjust the label positions (pretty cludgy but cleaner than changing the Rdata)
 Sula_Lab$Long <- Sula_Lab$Long-0.3
-
 Sula_Lab['WC','Lat'] <- Sula_Lab['WC','Lat'] + 2.2 # up
 Sula_Lab['WC','Long'] <- Sula_Lab['WC','Long'] - 0.3 # left
-
 Sula_Lab['NE','Lat'] <- Sula_Lab['NE','Lat'] + 0.35 # up
 Sula_Lab['NE','Long'] <- Sula_Lab['NE','Long'] - 0.5 # left
-
 Sula_Lab['NC','Lat'] <- Sula_Lab['NC','Lat'] + 0.10 # up
 Sula_Lab['NC','Long'] <- Sula_Lab['NC','Long'] - 0.5 # left
-
 Sula_Lab['NW','Lat'] <- Sula_Lab['NW','Lat'] + 0.30 # up
 Sula_Lab['NW','Long'] <- Sula_Lab['NW','Long'] - 0.75 # left
-
 Sula_Lab['SW','Lat'] <- Sula_Lab['SW','Lat'] + 0.23 # up
 Sula_Lab['SW','Long'] <- Sula_Lab['SW','Long'] + 1.05 # right
-
 Sula_Lab['SU','Long'] <- Sula_Lab['SU','Long'] - 0.2 # left
-
 Sula_Lab['BU','Long'] <- Sula_Lab['BU','Long'] - 0.5 # left
-
 Sula_Lab['EC','Lat'] <- Sula_Lab['EC','Lat'] - 0.5 # down
-
 Sula_Lab['SE','Lat'] <- Sula_Lab['SE','Lat'] + 0.2 # up
 Sula_Lab['SE','Long'] <- Sula_Lab['SE','Long'] + 0.3 # right
-
 Sula_Lab['BT','Long'] <- Sula_Lab['BT','Long'] + 0.2 # right
 
 # start preparing the data
