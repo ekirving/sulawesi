@@ -160,12 +160,12 @@ Sula_Lab$Long <- Sula_Lab$Long-0.3
 Sula_Lab['WC','Lat'] <- Sula_Lab['WC','Lat'] + 2.2 # up
 Sula_Lab['WC','Long'] <- Sula_Lab['WC','Long'] - 0.3 # left
 Sula_Lab['NE','Lat'] <- Sula_Lab['NE','Lat'] + 0.35 # up
-Sula_Lab['NE','Long'] <- Sula_Lab['NE','Long'] - 0.5 # left
+Sula_Lab['NE','Long'] <- Sula_Lab['NE','Long'] - 0.6 # left
 Sula_Lab['NC','Lat'] <- Sula_Lab['NC','Lat'] + 0.10 # up
 Sula_Lab['NC','Long'] <- Sula_Lab['NC','Long'] - 0.5 # left
 Sula_Lab['NW','Lat'] <- Sula_Lab['NW','Lat'] + 0.30 # up
 Sula_Lab['NW','Long'] <- Sula_Lab['NW','Long'] - 0.75 # left
-Sula_Lab['SW','Lat'] <- Sula_Lab['SW','Lat'] + 0.23 # up
+Sula_Lab['SW','Lat'] <- Sula_Lab['SW','Lat'] + 0.20 # up
 Sula_Lab['SW','Long'] <- Sula_Lab['SW','Long'] + 1.05 # right
 Sula_Lab['SU','Long'] <- Sula_Lab['SU','Long'] - 0.2 # left
 Sula_Lab['BU','Long'] <- Sula_Lab['BU','Long'] - 0.5 # left
@@ -198,6 +198,7 @@ baby.colours2 <- c('#f5cc9c', '#ecb8d3', '#e09568', '#fe8b8d', '#d4daf9', '#95af
 susc.colours2 <- c('#95afdf', '#f5cc9c', '#a4dfea', '#b5b077', '#fe8b8d')
 
 pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
+# png(file = "sulawesi/pdf/Sula-Maps.png", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8, units = 'in', res=300)
 
 # display the maps in a 2x3 grid
 par(mfrow = c(2,3), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1), bty = 'n')
