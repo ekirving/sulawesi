@@ -170,20 +170,23 @@ anoa.data <- Anoa_All_Genetics[,c('A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_
 baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', location.columns)]
 susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S6_BU', 'S7_EC', location.columns)]
 
-# TODO setup the colour lists
-anoa.colours <- WesAndersonCol[1:(ncol(anoa.data)-3)]
-baby.colours <- WesAndersonCol[1:(ncol(baby.data)-3)]
-susc.colours <- WesAndersonCol[1:(ncol(susc.data)-3)]
+# TODO setup the STRUCTURE colour lists
+# anoa.colours <- c('#95afdf', '#d7664d', '#fe8b8d', '#a6b6bb', '#d4daf9')
+# baby.colours <- c('#f5cc9c', '#ecb8d3', '#e09568', '#fe8b8d', '#d4daf9')
+# susc.colours <- c('#95afdf', '#f5cc9c', '#a4dfea', '#fe8b8d', '#d4daf9', '#d7664d', '#f7c8ce')
+anoa.colours <- c('#a6b6bb', '#95afdf', '#d4daf9', '#fe8b8d', '#d7664d')
+baby.colours <- c('#ecb8d3', '#d4daf9', '#f5cc9c', '#e09568', '#fe8b8d')
+susc.colours <- c('#95afdf', '#a4dfea', '#f7c8ce', '#d4daf9', '#fe8b8d', '#f5cc9c', '#d7664d')
 
 # get the cluster data
 anoa.data2 <- clade2q(Anoa_All_Genetics[,c('LF_Anoa_Clust', location.columns)])
 baby.data2 <- clade2q(Baby_All_Genetics[,c('LF_Baby_Clust', location.columns)])
 susc.data2 <- clade2q(Sus_cel_All_Genetics[,c('LF_Sus_cel_Clust', location.columns)])
 
-# TODO setup the colour lists
-anoa.colours2 <- WesAndersonCol[1:(ncol(anoa.data2)-3)]
-baby.colours2 <- WesAndersonCol[1:(ncol(baby.data2)-3)]
-susc.colours2 <- WesAndersonCol[1:(ncol(susc.data2)-3)]
+# TODO setup the mtDNA colour lists
+anoa.colours2 <- c('#e09568', '#95afdf', '#d7664d', '#fe8b8d', '#a6b6bb', '#d4daf9')
+baby.colours2 <- c('#f5cc9c', '#ecb8d3', '#e09568', '#fe8b8d', '#d4daf9', '#95afdf')
+susc.colours2 <- c('#95afdf', '#f5cc9c', '#a4dfea', '#b5b077', '#fe8b8d')
 
 pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
 
@@ -196,8 +199,8 @@ render_map(baby.data2, baby.colours2, map.display, 'Clades')
 render_map(susc.data2, susc.colours2, map.display, 'Clades')
 
 # STRUCTURE maps
-render_map(anoa.data, anoa.colours, map.display)
-render_map(baby.data, baby.colours, map.display)
-render_map(susc.data, susc.colours, map.display)
+render_map(anoa.data, anoa.colours, map.display, 'Ancestral Pops (K)')
+render_map(baby.data, baby.colours, map.display, 'Ancestral Pops (K)')
+render_map(susc.data, susc.colours, map.display, 'Ancestral Pops (K)')
 
 dev.off()
