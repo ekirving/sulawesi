@@ -27,7 +27,7 @@ WesAndersonCol <- c(wes_palette("GrandBudapest")[c(1:2, 4)],
 # pie(rep(1,length(WesAndersonCol)), col=WesAndersonCol)
 
 # text sizing
-text_cex = 2
+text_cex = 1.8
 point_cex = 1
 
 # how many graduated steps to show in the colour palette (larger = smoother gradient)
@@ -38,14 +38,14 @@ interpol = FieldsKrigModel()
 # interpol = FieldsTpsModel()
 
 # Tess3 resolution for the interpolation surface
-resolution <- c(100,100)
-# resolution <- c(1000,1000)
+# resolution <- c(100,100)
+resolution <- c(1000,1000)
 
 # display the outline of the map, overlaid on the admixture components
 map.display = TRUE
 
 # set the lat/long boundaries for the map
-xlim <- c(118.5, 127.4)
+xlim <- c(119.1, 127.2)
 ylim <- c(-5.9, 2)
 
 # use the worldHires map
@@ -135,7 +135,7 @@ annotate_map <- function(segment.labels, segment.lines, species.colours, species
     species.clades <- sub("A4a", "A4", species.clades)
 
     # add the legend
-    legend(125.75, 1.7, legend = species.clades, fill = species.colours, cex = text_cex, bty = "n", title = legend.title)
+    legend(125.8, 2, legend = species.clades, fill = species.colours, cex = text_cex, bty = "n", title = legend.title)
   }
 }
 
@@ -165,7 +165,7 @@ Sula_Lab['NC','Lat'] <- Sula_Lab['NC','Lat'] + 0.10 # up
 Sula_Lab['NC','Long'] <- Sula_Lab['NC','Long'] - 0.5 # left
 Sula_Lab['NW','Lat'] <- Sula_Lab['NW','Lat'] + 0.30 # up
 Sula_Lab['NW','Long'] <- Sula_Lab['NW','Long'] - 0.75 # left
-Sula_Lab['SW','Lat'] <- Sula_Lab['SW','Lat'] + 0.20 # up
+# Sula_Lab['SW','Lat'] <- Sula_Lab['SW','Lat'] + 0.20 # up
 Sula_Lab['SW','Long'] <- Sula_Lab['SW','Long'] + 1.05 # right
 Sula_Lab['SU','Long'] <- Sula_Lab['SU','Long'] - 0.2 # left
 Sula_Lab['BU','Long'] <- Sula_Lab['BU','Long'] - 0.5 # left
@@ -201,7 +201,7 @@ pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height 
 # png(file = "sulawesi/pdf/Sula-Maps.png", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8, units = 'in', res=300)
 
 # display the maps in a 2x3 grid
-par(mfrow = c(2,3), mar = c(0, 0, 0, 0), oma = c(1, 1, 1, 1), bty = 'n')
+par(mfrow = c(2,3), mar = c(4, 3, 4, 3), bty = 'n')
 
 # Clade maps
 render_map(anoa.data2, anoa.colours2, map.display, 'Clades')
@@ -209,8 +209,8 @@ render_map(baby.data2, baby.colours2, map.display, 'Clades')
 render_map(susc.data2, susc.colours2, map.display, 'Clades')
 
 # STRUCTURE maps
-render_map(anoa.data, anoa.colours, map.display, 'Ancestral\n(K)')
-render_map(baby.data, baby.colours, map.display, 'Ancestral\n(K)')
-render_map(susc.data, susc.colours, map.display, 'Ancestral\n(K)')
+render_map(anoa.data, anoa.colours, map.display, 'Ancestral (K)')
+render_map(baby.data, baby.colours, map.display, 'Ancestral (K)')
+render_map(susc.data, susc.colours, map.display, 'Ancestral (K)')
 
 dev.off()
