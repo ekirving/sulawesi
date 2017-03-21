@@ -14,14 +14,14 @@ insertSource("TESS3/R/spatialPlots.R", package = "tess3r", functions = 'PlotInte
 load('sulawesi/Sulawesi.RData')
 
 # get the custom colour palette
-WesAndersonCol <- c(wes_palette("GrandBudapest")[c(1:2, 4)],
-                    wes_palette("GrandBudapest2")[c(1:2, 4)],
-                    wes_palette("Royal1")[c(1, 2)],
-                    wes_palette("Moonrise3")[c(1, 3, 2, 5)],
-                    wes_palette("Moonrise2")[c(4, 2)],
-                    wes_palette("Darjeeling")[c(1)],
-                    wes_palette("Royal2")[c(5)],
-                    wes_palette("Chevalier")[c(3)])
+WesAndersonCol <- c(wes_palette("GrandBudapest"),
+                    wes_palette("GrandBudapest2"),
+                    wes_palette("Royal1"),
+                    wes_palette("Moonrise3"),
+                    wes_palette("Moonrise2"),
+                    wes_palette("Darjeeling"),
+                    wes_palette("Royal2"),
+                    wes_palette("Chevalier"))
 
 # display the colour list
 # pie(rep(1,length(WesAndersonCol)), col=WesAndersonCol)
@@ -38,7 +38,7 @@ interpol = FieldsKrigModel()
 # interpol = FieldsTpsModel()
 
 # Tess3 resolution for the interpolation surface
-# resolution <- c(100,100)
+# resolution <- c(400,400)
 resolution <- c(1000,1000)
 
 # display the outline of the map, overlaid on the admixture components
@@ -185,10 +185,16 @@ anoa.data <- Anoa_All_Genetics[,c('A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_
 baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', location.columns)]
 susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S6_BU', 'S7_EC', location.columns)]
 
+bluecol = WesAndersonCol[25] # orgage
+darkgrey = WesAndersonCol[18]
+yellowcol = WesAndersonCol[23] # dark green
+pinkcol = WesAndersonCol[5]
+orangecol = WesAndersonCol[13] # teal
+
 # setup the STRUCTURE colour lists
-anoa.colours <- c('#a6b6bb', '#95afdf', '#d4daf9', '#fe8b8d', '#d7664d')
-baby.colours <- c('#ecb8d3', '#d4daf9', '#f5cc9c', '#e09568', '#fe8b8d')
-susc.colours <- c('#95afdf', '#a4dfea', '#f7c8ce', '#d4daf9', '#fe8b8d', '#f5cc9c', '#d7664d')
+anoa.colours <- c(darkgrey, bluecol, '#d4daf9', '#fe8b8d', '#d7664d')
+baby.colours <- c(pinkcol, '#d4daf9', yellowcol, orangecol, '#fe8b8d')
+susc.colours <- c(bluecol, '#a4dfea', '#f7c8ce', '#d4daf9', '#fe8b8d', yellowcol, '#d7664d')
 
 # get the mtDNA clades and transpose them into a Q matrix
 anoa.data2 <- clade2q(Anoa_All_Genetics[,c('LF_Anoa_Clust', location.columns)])
@@ -196,12 +202,15 @@ baby.data2 <- clade2q(Baby_All_Genetics[,c('LF_Baby_Clust', location.columns)])
 susc.data2 <- clade2q(Sus_cel_All_Genetics[,c('LF_Sus_cel_Clust', location.columns)])
 
 # setup the mtDNA colour lists
-anoa.colours2 <- c('#e09568', '#95afdf', '#d7664d', '#fe8b8d', '#a6b6bb', '#d4daf9')
-baby.colours2 <- c('#f5cc9c', '#ecb8d3', '#e09568', '#fe8b8d', '#d4daf9', '#95afdf')
-susc.colours2 <- c('#95afdf', '#f5cc9c', '#a4dfea', '#b5b077', '#fe8b8d')
+anoa.colours2 <- c(orangecol, bluecol, '#d7664d', '#fe8b8d', darkgrey, '#d4daf9')
+baby.colours2 <- c(yellowcol, pinkcol, orangecol, '#fe8b8d', '#d4daf9', bluecol)
+susc.colours2 <- c(bluecol, yellowcol, '#a4dfea', '#b5b077', '#fe8b8d')
 
-pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
-# png(file = "sulawesi/pdf/Sula-Maps.png", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8, units = 'in', res=300)
+# WesAndersonCol[25]
+pie(rep(1,length(WesAndersonCol)), col=WesAndersonCol, radius=1.3)
+
+# pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
+png(file = "sulawesi/pdf/Sula-Maps.png", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8, units = 'in', res=300)
 
 # display the maps in a 2x3 grid
 par(mfrow = c(2,3), mar = c(6, 5, 6, 5), bty = 'n')
