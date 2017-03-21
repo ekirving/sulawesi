@@ -2,7 +2,6 @@ library(maps)
 library(mapdata)
 library(maptools)
 library(tess3r)
-library(wesanderson)
 
 # set working directory
 setwd('/Users/Evan/Dropbox/Code/')
@@ -12,19 +11,6 @@ insertSource("TESS3/R/spatialPlots.R", package = "tess3r", functions = 'PlotInte
 
 # load the Sulawesi RData
 load('sulawesi/Sulawesi.RData')
-
-# get the custom colour palette
-WesAndersonCol <- c(wes_palette("GrandBudapest")[c(1:2, 4)],
-                    wes_palette("GrandBudapest2")[c(1:2, 4)],
-                    wes_palette("Royal1")[c(1, 2)],
-                    wes_palette("Moonrise3")[c(1, 3, 2, 5)],
-                    wes_palette("Moonrise2")[c(4, 2)],
-                    wes_palette("Darjeeling")[c(1)],
-                    wes_palette("Royal2")[c(5)],
-                    wes_palette("Chevalier")[c(3)])
-
-# display the colour list
-# pie(rep(1,length(WesAndersonCol)), col=WesAndersonCol)
 
 # text sizing
 text_cex = 1.8
@@ -38,16 +24,14 @@ interpol = FieldsKrigModel()
 # interpol = FieldsTpsModel()
 
 # Tess3 resolution for the interpolation surface
-resolution <- c(400,400)
-# resolution <- c(1000,1000)
+# resolution <- c(100,100)
+resolution <- c(1000,1000)
 
 # display the outline of the map, overlaid on the admixture components
 map.display = TRUE
 
 # set the lat/long boundaries for the map
-# xlim <- c(118.5, 127.4)
-xlim <- c(118.6, 127.3)
-# xlim <- c(119.1, 127.2)
+xlim <- c(118.6, 127.8)
 ylim <- c(-5.9, 2)
 
 # use the worldHires map
@@ -137,8 +121,7 @@ annotate_map <- function(segment.labels, segment.lines, species.colours, species
     species.clades <- sub("A4a", "A4", species.clades)
 
     # add the legend
-    # legend(125.75, 1.7, legend = species.clades, fill = species.colours, cex = text_cex, bty = "n", title = legend.title)
-    legend(125.5, 2.1, legend = species.clades, fill = species.colours, cex = text_cex, bty = "n", title = legend.title)
+    legend(125.3, 2.1, legend = species.clades, fill = species.colours, cex = text_cex, bty = "n", title = legend.title)
   }
 }
 
@@ -185,13 +168,14 @@ anoa.data <- Anoa_All_Genetics[,c('A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_
 baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', location.columns)]
 susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S6_BU', 'S7_EC', location.columns)]
 
+# colour scheme from http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=12
 colour1 = '#a6cee3'
 colour2 = '#1f78b4'
 colour3 = '#b2df8a'
 colour4 = '#cab2d6'
 colour5 = '#fb9a99'
 colour6 = '#e31a1c'
-colour7 = '#fdbf6f'
+colour7 = '#b15928'
 colour8 = '#ff7f00'
 colour9 = '#ffff99'
 colour10 = '#6a3d9a'
@@ -212,20 +196,20 @@ anoa.colours2 <- c(colour8, colour2, colour5, colour4, colour1, colour3)
 baby.colours2 <- c(colour7, colour6, colour8, colour4, colour3, colour2)
 susc.colours2 <- c(colour2, colour7, colour9, colour11, colour4)
 
-# pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
-png(file = "sulawesi/pdf/Sula-Maps.png", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8, units = 'in', res=300)
+pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
+# png(file = "sulawesi/pdf/Sula-Maps.png", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8, units = 'in', res=300)
 
 # display the maps in a 2x3 grid
 par(mfrow = c(2,3), mar = c(6, 5, 6, 5), bty = 'n')
 
 # Clade maps
-render_map(anoa.data2, anoa.colours2, map.display, 'Clades')
-render_map(baby.data2, baby.colours2, map.display, 'Clades')
-render_map(susc.data2, susc.colours2, map.display, 'Clades')
+render_map(anoa.data2, anoa.colours2, map.display, 'Clades (mtDNA)')
+render_map(baby.data2, baby.colours2, map.display, 'Clades (mtDNA)')
+render_map(susc.data2, susc.colours2, map.display, 'Clades (mtDNA)')
 
 # STRUCTURE maps
-render_map(anoa.data, anoa.colours, map.display, 'Ancestral (K)')
-render_map(baby.data, baby.colours, map.display, 'Ancestral (K)')
-render_map(susc.data, susc.colours, map.display, 'Ancestral (K)')
+render_map(anoa.data, anoa.colours, map.display, 'Ancestral K (μsat)')
+render_map(baby.data, baby.colours, map.display, 'Ancestral K (μsat)')
+render_map(susc.data, susc.colours, map.display, 'Ancestral K (μsat)')
 
 dev.off()
