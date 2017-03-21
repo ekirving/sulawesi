@@ -38,8 +38,8 @@ interpol = FieldsKrigModel()
 # interpol = FieldsTpsModel()
 
 # Tess3 resolution for the interpolation surface
-# resolution <- c(100,100)
-resolution <- c(1000,1000)
+resolution <- c(400,400)
+# resolution <- c(1000,1000)
 
 # display the outline of the map, overlaid on the admixture components
 map.display = TRUE
@@ -185,10 +185,22 @@ anoa.data <- Anoa_All_Genetics[,c('A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_
 baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', location.columns)]
 susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S6_BU', 'S7_EC', location.columns)]
 
+colour1 = '#a6cee3'
+colour2 = '#1f78b4'
+colour3 = '#b2df8a'
+colour4 = '#cab2d6'
+colour5 = '#fb9a99'
+colour6 = '#e31a1c'
+colour7 = '#fdbf6f'
+colour8 = '#ff7f00'
+colour9 = '#ffff99'
+colour10 = '#6a3d9a'
+colour11 = '#33a02c'
+
 # setup the STRUCTURE colour lists
-anoa.colours <- c('#a6b6bb', '#95afdf', '#d4daf9', '#fe8b8d', '#d7664d')
-baby.colours <- c('#ecb8d3', '#d4daf9', '#f5cc9c', '#e09568', '#fe8b8d')
-susc.colours <- c('#95afdf', '#a4dfea', '#f7c8ce', '#d4daf9', '#fe8b8d', '#f5cc9c', '#d7664d')
+anoa.colours <- c(colour1, colour2, colour3, colour4, colour5)
+baby.colours <- c(colour6, colour3, colour7, colour8, colour4)
+susc.colours <- c(colour2, colour9, colour10, colour3, colour4, colour7, colour5)
 
 # get the mtDNA clades and transpose them into a Q matrix
 anoa.data2 <- clade2q(Anoa_All_Genetics[,c('LF_Anoa_Clust', location.columns)])
@@ -196,12 +208,12 @@ baby.data2 <- clade2q(Baby_All_Genetics[,c('LF_Baby_Clust', location.columns)])
 susc.data2 <- clade2q(Sus_cel_All_Genetics[,c('LF_Sus_cel_Clust', location.columns)])
 
 # setup the mtDNA colour lists
-anoa.colours2 <- c('#e09568', '#95afdf', '#d7664d', '#fe8b8d', '#a6b6bb', '#d4daf9')
-baby.colours2 <- c('#f5cc9c', '#ecb8d3', '#e09568', '#fe8b8d', '#d4daf9', '#95afdf')
-susc.colours2 <- c('#95afdf', '#f5cc9c', '#a4dfea', '#b5b077', '#fe8b8d')
+anoa.colours2 <- c(colour8, colour2, colour5, colour4, colour1, colour3)
+baby.colours2 <- c(colour7, colour6, colour8, colour4, colour3, colour2)
+susc.colours2 <- c(colour2, colour7, colour9, colour11, colour4)
 
-pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
-# png(file = "sulawesi/pdf/Sula-Maps.png", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8, units = 'in', res=300)
+# pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8)
+png(file = "sulawesi/pdf/Sula-Maps.png", width = (xlim[2]-xlim[1])*3*.8, height = (ylim[2]-ylim[1])*2*.8, units = 'in', res=300)
 
 # display the maps in a 2x3 grid
 par(mfrow = c(2,3), mar = c(6, 5, 6, 5), bty = 'n')
