@@ -175,6 +175,19 @@ anoa.data <- Anoa_All_Genetics[,c('A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_
 baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', location.columns)]
 susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S6_BU', 'S7_EC', location.columns)]
 
+# use the new STRUCTURE data provided by LAF
+anoa.data.LAF <- as.data.frame(read.table('sulawesi/data/Anoa_STRUCTURE_LAFF.tsv'))
+colnames(anoa.data.LAF) <- c('AAMID', paste('A', c(1:(length(anoa.data.LAF)-1)), sep = ''))
+anoa.data.LAF <- merge(anoa.data.LAF, Anoa_All_Genetics[,c('AAMID', location.columns)], by = 'AAMID')[-1]
+
+baby.data.LAF <- as.data.frame(read.table('sulawesi/data/Baby_STRUCTURE_LAFF.tsv'))
+colnames(baby.data.LAF) <- c('AAMID', paste('B', c(1:(length(baby.data.LAF)-1)), sep = ''))
+baby.data.LAF <- merge(baby.data.LAF, Baby_All_Genetics[,c('AAMID', location.columns)], by = 'AAMID')[-1]
+
+susc.data.LAF <- as.data.frame(read.table('sulawesi/data/Sus_STRUCTURE_LAFF.tsv'))
+colnames(susc.data.LAF) <- c('AAMID', paste('S', c(1:(length(susc.data.LAF)-1)), sep = ''))
+susc.data.LAF <- merge(susc.data.LAF, Sus_cel_All_Genetics[,c('AAMID', location.columns)], by = 'AAMID')[-1]
+
 # colour scheme from http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=12
 colour1 = '#a6cee3'  # blue, light
 colour2 = '#1f78b4'  # blue, dark
@@ -189,9 +202,14 @@ colour10 = '#6a3d9a' # purple, dark
 colour11 = '#33a02c' # green, dark
 
 # setup the STRUCTURE colour lists
-anoa.colours <- c(colour1, colour2, colour3, colour4, colour5)
-baby.colours <- c(colour6, colour3, colour7, colour8, colour4)
-susc.colours <- c(colour2, colour9, colour10, colour3, colour4, colour7, colour5)
+# anoa.colours <- c(colour1, colour2, colour3, colour4, colour5)
+# baby.colours <- c(colour6, colour3, colour7, colour8, colour4)
+# susc.colours <- c(colour2, colour9, colour10, colour3, colour4, colour7, colour5)
+
+# we need different colour list for the LAF data
+anoa.colours.LAF <- c(colour2, colour4, colour3, colour1, colour5)
+baby.colours.LAF <- c(colour6, colour8, colour4, colour2, colour7, colour3)
+susc.colours.LAF <- c(colour5, colour3, colour2, colour7, colour4)
 
 # get the mtDNA clades and transpose them into a Q matrix
 anoa.data2 <- clade2q(Anoa_All_Genetics[,c('LF_Anoa_Clust', location.columns)])
@@ -219,8 +237,13 @@ render_map(baby.data2, baby.colours2, map.display, cladelabel)
 render_map(susc.data2, susc.colours2, map.display, cladelabel)
 
 # # STRUCTURE maps
-render_map(anoa.data, anoa.colours, map.display, structlabel)
-render_map(baby.data, baby.colours, map.display, structlabel)
-render_map(susc.data, susc.colours, map.display, structlabel)
+# render_map(anoa.data, anoa.colours, map.display, structlabel)
+# render_map(baby.data, baby.colours, map.display, structlabel)
+# render_map(susc.data, susc.colours, map.display, structlabel)
+
+# show the new LAF data
+render_map(anoa.data.LAF, anoa.colours, map.display, structlabel)
+render_map(baby.data.LAF, baby.colours.LAF, map.display, structlabel)
+render_map(susc.data.LAF, susc.colours.LAF, map.display, structlabel)
 
 dev.off()
