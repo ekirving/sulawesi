@@ -45,7 +45,7 @@ render_map <- function(species.data, species.colours, map.display = TRUE, legend
   species.data <- na.omit(species.data)
 
   # drop Zoo samples and those of unknown origin
-  species.data <- species.data[-which(species.data$Loc_Abbrev_LF %in% c("UN", "ZO", "SU_BU", "S")),]
+  species.data <- species.data[!(species.data$Loc_Abbrev_LF %in% c("UN", "ZO", "SU_BU", "S")),]
 
   # drop any columns with all zero values (i.e. any orphan components for Zoo samples)
   species.data <- species.data[, c(!colSums(species.data[1:(ncol(species.data)-3)])==0, TRUE, TRUE, TRUE)]
