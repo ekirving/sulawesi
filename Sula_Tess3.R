@@ -164,9 +164,6 @@ Sula_Lab['BT','Long'] <- Sula_Lab['BT','Long'] + 0.2 # right
 # update the PE to BA
 rownames(Sula_Lab)[11] <- 'BA'
 
-# merge A5a and A5b clades
-Anoa_All_Genetics[Anoa_All_Genetics$LF_Anoa_Clust=="A5b_SE"]<-'A5a_BT'
-
 # start preparing the data
 location.columns <- c('Loc_Abbrev_LF', 'Longitude', 'Latitude')
 
@@ -211,8 +208,12 @@ anoa.colours.LAF <- c(colour2, colour4, colour3, colour1, colour5)
 baby.colours.LAF <- c(colour6, colour8, colour4, colour2, colour7, colour3)
 susc.colours.LAF <- c(colour5, colour3, colour2, colour7, colour4)
 
+# merge A5a and A5b clades
+anoa_clust <- na.omit(Anoa_All_Genetics[,c('LF_Anoa_Clust', location.columns)])
+anoa_clust$LF_Anoa_Clust[anoa_clust$LF_Anoa_Clust=="A5b_SE"] <-'A5a_BT'
+
 # get the mtDNA clades and transpose them into a Q matrix
-anoa.data2 <- clade2q(Anoa_All_Genetics[,c('LF_Anoa_Clust', location.columns)])
+anoa.data2 <- clade2q(anoa_clust)
 baby.data2 <- clade2q(Baby_All_Genetics[,c('LF_Baby_Clust', location.columns)])
 susc.data2 <- clade2q(Sus_cel_All_Genetics[,c('LF_Sus_cel_Clust', location.columns)])
 
@@ -242,7 +243,7 @@ render_map(susc.data2, susc.colours2, map.display, cladelabel)
 # render_map(susc.data, susc.colours, map.display, structlabel)
 
 # show the new LAF data
-render_map(anoa.data.LAF, anoa.colours, map.display, structlabel)
+render_map(anoa.data.LAF, anoa.colours.LAF, map.display, structlabel)
 render_map(baby.data.LAF, baby.colours.LAF, map.display, structlabel)
 render_map(susc.data.LAF, susc.colours.LAF, map.display, structlabel)
 
