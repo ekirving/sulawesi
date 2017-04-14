@@ -160,6 +160,9 @@ Sula_Lab['SE','Lat'] <- Sula_Lab['SE','Lat'] + 0.2 # up
 Sula_Lab['SE','Long'] <- Sula_Lab['SE','Long'] + 0.3 # right
 Sula_Lab['BT','Long'] <- Sula_Lab['BT','Long'] + 0.2 # right
 
+# update the PE to BA
+rownames(Sula_Lab)[11] <- 'BA'
+
 # start preparing the data
 location.columns <- c('Loc_Abbrev_LF', 'Longitude', 'Latitude')
 
