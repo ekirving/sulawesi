@@ -209,14 +209,18 @@ pdf(file = "sulawesi/pdf/Sula-Maps.pdf", width = (xlim[2]-xlim[1])*3*.8, height 
 # display the maps in a 2x3 grid
 par(mfrow = c(2,3), mar = c(6, 5, 6, 5), bty = 'n')
 
-# Clade maps
-render_map(anoa.data2, anoa.colours2, map.display, 'Clades (mtDNA)')
-render_map(baby.data2, baby.colours2, map.display, 'Clades (mtDNA)')
-render_map(susc.data2, susc.colours2, map.display, 'Clades (mtDNA)')
+# setup the legend labels
+cladelabel <- enc2utf8('Clades (mtDNA)')
+structlabel <- enc2utf8('Ancestral K (μsat)')
 
-# STRUCTURE maps
-render_map(anoa.data, anoa.colours, map.display, 'Ancestral K (μsat)')
-render_map(baby.data, baby.colours, map.display, 'Ancestral K (μsat)')
-render_map(susc.data, susc.colours, map.display, 'Ancestral K (μsat)')
+# Clade maps
+render_map(anoa.data2, anoa.colours2, map.display, cladelabel)
+render_map(baby.data2, baby.colours2, map.display, cladelabel)
+render_map(susc.data2, susc.colours2, map.display, cladelabel)
+
+# # STRUCTURE maps
+render_map(anoa.data, anoa.colours, map.display, structlabel)
+render_map(baby.data, baby.colours, map.display, structlabel)
+render_map(susc.data, susc.colours, map.display, structlabel)
 
 dev.off()
