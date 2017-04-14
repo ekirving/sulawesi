@@ -163,6 +163,9 @@ Sula_Lab['BT','Long'] <- Sula_Lab['BT','Long'] + 0.2 # right
 # update the PE to BA
 rownames(Sula_Lab)[11] <- 'BA'
 
+# merge A5a and A5b clades
+Anoa_All_Genetics[Anoa_All_Genetics$LF_Anoa_Clust=="A5b_SE"]<-'A5a_BT'
+
 # start preparing the data
 location.columns <- c('Loc_Abbrev_LF', 'Longitude', 'Latitude')
 
@@ -195,7 +198,7 @@ baby.data2 <- clade2q(Baby_All_Genetics[,c('LF_Baby_Clust', location.columns)])
 susc.data2 <- clade2q(Sus_cel_All_Genetics[,c('LF_Sus_cel_Clust', location.columns)])
 
 # setup the mtDNA colour lists
-anoa.colours2 <- c(colour8, colour2, colour5, colour4, colour1, colour3)
+anoa.colours2 <- c(colour8, colour2, colour5, colour4, colour3)
 baby.colours2 <- c(colour7, colour6, colour8, colour4, colour3, colour2)
 susc.colours2 <- c(colour2, colour7, colour9, colour11, colour4)
 
