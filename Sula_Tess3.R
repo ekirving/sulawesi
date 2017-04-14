@@ -117,8 +117,9 @@ annotate_map <- function(segment.labels, segment.lines, species.colours, species
     # trim any trailing suffix
     species.clades <- sub("_.+", "", species.clades)
 
-    # handle special case of A4a
+    # handle special cases of A4a and A5a
     species.clades <- sub("A4a", "A4", species.clades)
+    species.clades <- sub("A5a", "A5", species.clades)
 
     # add the legend
     legend(125.3, 2.1, legend = species.clades, fill = species.colours, cex = text_cex, bty = "n", title = legend.title)
@@ -175,17 +176,17 @@ baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_
 susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S6_BU', 'S7_EC', location.columns)]
 
 # colour scheme from http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=12
-colour1 = '#a6cee3'
-colour2 = '#1f78b4'
-colour3 = '#b2df8a'
-colour4 = '#cab2d6'
-colour5 = '#fb9a99'
-colour6 = '#e31a1c'
-colour7 = '#b15928'
-colour8 = '#ff7f00'
-colour9 = '#ffff99'
-colour10 = '#6a3d9a'
-colour11 = '#33a02c'
+colour1 = '#a6cee3'  # blue, light
+colour2 = '#1f78b4'  # blue, dark
+colour3 = '#b2df8a'  # green, light
+colour4 = '#cab2d6'  # purple, light
+colour5 = '#fb9a99'  # red, light
+colour6 = '#e31a1c'  # red, dark
+colour7 = '#b15928'  # brown
+colour8 = '#ff7f00'  # orange, dark
+colour9 = '#ffff99'  # yellow
+colour10 = '#6a3d9a' # purple, dark
+colour11 = '#33a02c' # green, dark
 
 # setup the STRUCTURE colour lists
 anoa.colours <- c(colour1, colour2, colour3, colour4, colour5)
