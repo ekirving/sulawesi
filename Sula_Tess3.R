@@ -87,6 +87,7 @@ render_map <- function(species.data, species.colours, map.display = TRUE, legend
   segment.labels[is.na(segment.labels)] <- 0
 
   # update the label for PE to BA
+  segment.labels$name <- as.character(segment.labels$name)
   segment.labels$name[segment.labels$name=='PE'] <- 'BA'
 
   # add the regions, labels and mask some of the peripheral islands
