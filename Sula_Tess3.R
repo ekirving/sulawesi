@@ -168,23 +168,66 @@ Sula_Lab['BT','Long'] <- Sula_Lab['BT','Long'] + 0.2 # right
 # start preparing the data
 location.columns <- c('Loc_Abbrev_LF', 'Longitude', 'Latitude')
 
+tidy_data <- function(species.data) {
+
+    # drop any rows with missing components or locations
+    species.data <- na.omit(species.data)
+
+    # drop Zoo samples and those of unknown origin
+    species.data <- species.data[!(species.data$Loc_Abbrev_LF %in% c("UN", "ZO", "SU_BU", "S")),]
+
+    # drop any columns with all zero values (i.e. any orphan components for Zoo samples)
+    species.data[, c(!colSums(species.data[2:(ncol(species.data)-3)])==0, TRUE, TRUE, TRUE)]
+}
+
 # extract the STRUCTURE components and the sample locations
-anoa.data <- Anoa_All_Genetics[,c('A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_EC', location.columns)]
-baby.data <- Baby_All_Genetics[,c('B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', location.columns)]
-susc.data <- Sus_cel_All_Genetics[,c('S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S6_BU', 'S7_EC', location.columns)]
+anoa.data <- Anoa_All_Genetics[,c('AAMID', 'A1_BT', 'A2_NW', 'A3_SE', 'A4_NE_WC', 'A5_NC_EC', location.columns)]
+baby.data <- Baby_All_Genetics[,c('AAMID', 'B1_WC_NW', 'B2_SE', 'B3_SU_BU', 'B4_NE', 'B5_TO', location.columns)]
+susc.data <- Sus_cel_All_Genetics[,c('AAMID', 'S1_NW', 'S2_PE', 'S3', 'S4_SE_BT', 'S5_WC_SW', 'S6_BU', 'S7_EC', location.columns)]
+
+anoa.data <- tidy_data(anoa.data)
+baby.data <- tidy_data(baby.data)
+susc.data <- tidy_data(susc.data)
+
+dim(anoa.data)
+dim(baby.data)
+dim(susc.data)
+
 
 # use the new STRUCTURE data provided by LAF
 anoa.data.LAF <- as.data.frame(read.table('sulawesi/data/Anoa_STRUCTURE_LAFF.tsv'))
 colnames(anoa.data.LAF) <- c('AAMID', paste('A', c(1:(length(anoa.data.LAF)-1)), sep = ''))
-anoa.data.LAF <- merge(anoa.data.LAF, Anoa_All_Genetics[,c('AAMID', location.columns)], by = 'AAMID')[-1]
+anoa.data.LAF <- merge(anoa.data.LAF, Anoa_All_Genetics[,c('AAMID', location.columns)], by = 'AAMID')
 
 baby.data.LAF <- as.data.frame(read.table('sulawesi/data/Baby_STRUCTURE_LAFF.tsv'))
 colnames(baby.data.LAF) <- c('AAMID', paste('B', c(1:(length(baby.data.LAF)-1)), sep = ''))
-baby.data.LAF <- merge(baby.data.LAF, Baby_All_Genetics[,c('AAMID', location.columns)], by = 'AAMID')[-1]
+baby.data.LAF <- merge(baby.data.LAF, Baby_All_Genetics[,c('AAMID', location.columns)], by = 'AAMID')
 
 susc.data.LAF <- as.data.frame(read.table('sulawesi/data/Sus_STRUCTURE_LAFF.tsv'))
 colnames(susc.data.LAF) <- c('AAMID', paste('S', c(1:(length(susc.data.LAF)-1)), sep = ''))
-susc.data.LAF <- merge(susc.data.LAF, Sus_cel_All_Genetics[,c('AAMID', location.columns)], by = 'AAMID')[-1]
+susc.data.LAF <- merge(susc.data.LAF, Sus_cel_All_Genetics[,c('AAMID', location.columns)], by = 'AAMID')
+
+
+anoa.data.LAF <- tidy_data(anoa.data.LAF)
+baby.data.LAF <- tidy_data(baby.data.LAF)
+susc.data.LAF <- tidy_data(susc.data.LAF)
+
+dim(anoa.data.LAF)
+dim(baby.data.LAF)
+dim(susc.data.LAF)
+
+anoa.data.merged <- merge(anoa.data, anoa.data.LAF, by = 'AAMID', all=TRUE)
+baby.data.merged <- merge(baby.data, baby.data.LAF, by = 'AAMID', all=TRUE)
+susc.data.merged <- merge(susc.data, susc.data.LAF, by = 'AAMID', all=TRUE)
+
+dim(anoa.data.merged)
+dim(baby.data.merged)
+dim(susc.data.merged)
+
+write.csv(anoa.data.merged, file = "sulawesi/issue/Anoa.struct.csv")
+write.csv(baby.data.merged, file = "sulawesi/issue/Baby.struct.csv")
+write.csv(susc.data.merged, file = "sulawesi/issue/Susc.struct.csv")
+
 
 # colour scheme from http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=12
 colour1 = '#a6cee3'  # blue, light
