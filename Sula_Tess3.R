@@ -86,6 +86,9 @@ render_map <- function(species.data, species.colours, map.display = TRUE, legend
   segment.labels <- merge(x=segment.labels, y=counts, by.x="name", by.y="Var1", fill=0, all.x = TRUE)
   segment.labels[is.na(segment.labels)] <- 0
 
+  # update the label for PE to BA
+  segment.labels$name[segment.labels$name=='PE'] <- 'BA'
+
   # add the regions, labels and mask some of the peripheral islands
   annotate_map(segment.labels, Sula_Seg, species.colours, species.clades, legend.title)
 }
@@ -160,9 +163,6 @@ Sula_Lab['EC','Lat'] <- Sula_Lab['EC','Lat'] - 0.5 # down
 Sula_Lab['SE','Lat'] <- Sula_Lab['SE','Lat'] + 0.2 # up
 Sula_Lab['SE','Long'] <- Sula_Lab['SE','Long'] + 0.3 # right
 Sula_Lab['BT','Long'] <- Sula_Lab['BT','Long'] + 0.2 # right
-
-# update the PE to BA
-rownames(Sula_Lab)[11] <- 'BA'
 
 # start preparing the data
 location.columns <- c('Loc_Abbrev_LF', 'Longitude', 'Latitude')
