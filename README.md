@@ -2,7 +2,7 @@
 This repository contains R code for plotting Figure 4 from 
 the paper [Synchronous diversification of Sulawesi's iconic artiodactyls driven by recent geological events](https://doi.org/10.1098/rspb.2017.2566)
 
-![Figure 4](./blob/master/pdf/Figure_4.png?raw=true)
+![Figure 4](./pdf/Figure_4.png?raw=true)
 
 
 If you reuse any of this code then please cite the paper:
